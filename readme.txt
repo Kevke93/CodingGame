@@ -1,0 +1,1 @@
+#Solution for Coding Game Puzzles for www.codinggame.com
