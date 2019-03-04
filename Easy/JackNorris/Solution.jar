@@ -1,0 +1,95 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+		    public static void main(String args[]) {
+		        Scanner in = new Scanner(System.in);
+		        String MESSAGE = in.nextLine();
+		        
+		         char MessageArr[] =MESSAGE.toCharArray();
+		         int ASCINumber []=new int [MessageArr.length];
+		         
+		         for (int i =0; i<MessageArr.length;i++){
+		        	 ASCINumber[i]= (int) MessageArr[i];
+		        	
+		         }
+		         
+		         String BinaryNumbeTurnedArround="" ;
+		         String BinaryNumber="";
+		         
+		         for (int i =0; i<MessageArr.length;i++){
+		        	 while (ASCINumber[i]!=0){
+		        	 
+		        	 if (ASCINumber[i]%2 ==1)
+		        	 {
+		        		 BinaryNumbeTurnedArround=BinaryNumbeTurnedArround+"1"; 
+		        	 }
+		        	 else 
+		        	 {
+		        		 BinaryNumbeTurnedArround=BinaryNumbeTurnedArround+"0"; 
+		        	 }
+		        	 ASCINumber[i]=ASCINumber[i]/2;
+		        	 }
+		        	 
+			         char TurnedArroundBinarChar[] = BinaryNumbeTurnedArround.toCharArray();
+			        
+			         if (TurnedArroundBinarChar.length==6){BinaryNumber=BinaryNumber+"0";}
+			         
+			         for (int j =TurnedArroundBinarChar.length-1; j>=0;j--){
+			        	 
+			        	 BinaryNumber=BinaryNumber+TurnedArroundBinarChar[j];
+			         }
+			         BinaryNumbeTurnedArround="";
+		         }
+		         
+		         // Tranform into unbinay
+		         
+		         String Answer="";
+		         char BinaryNumberChar[]=BinaryNumber.toCharArray();
+		         
+		         
+		         for (int i =0; i<BinaryNumberChar.length;i++){
+		        	 
+		        	 if (BinaryNumberChar[i]=='1'){
+		        		 if (i==0){
+		        			Answer=Answer+"0 0"; 
+		        		 }
+		        		 else if (BinaryNumberChar[i-1]=='1')
+		        		 {
+		        			 Answer=Answer+"0";
+		        			 
+		        		 }
+		        		 else
+		        			 Answer=Answer+" 0 0";
+		        	 }
+		        	 else{
+		        		 if (i==0){
+		        			Answer=Answer+"00 0"; 
+		        		 }
+		        		 else if (BinaryNumberChar[i-1]=='0')
+		        		 {
+		        			 Answer=Answer+"0"; 
+		        			 
+		        		 }
+		        		 else
+		        			 Answer=Answer+" 00 0";
+		        		 
+		        		 
+		        	 }
+		         }
+
+		         
+		         
+		         
+		        // Write an action using System.out.println()
+		        // To debug: System.err.println("Debug messages...");
+		         
+		        System.out.println(Answer);
+		        
+}}

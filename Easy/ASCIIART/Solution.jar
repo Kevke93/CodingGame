@@ -1,0 +1,71 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+   public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int L = in.nextInt();
+        int H = in.nextInt();
+        
+        if (in.hasNextLine()) {
+            in.nextLine();
+        }
+        char[] T = (in.nextLine()).toCharArray();
+        
+        
+        
+        char[][] Output= new char [H][T.length*L];
+        int charCounter=0;
+        char [] Row ;
+        String temp="";
+        String test="";
+        for (int i = 0; i < H; i++) {
+        	test=in.nextLine();;
+              temp = temp+test;
+              System.err.println(test);
+        }
+        Row =temp.toCharArray();
+        
+        int AsciTemp;
+        for (int i=0;i<T.length;i++){
+           
+             AsciTemp=(int)T[i];
+        //Kleinschreibung
+        if (AsciTemp>=97 && AsciTemp<=122){
+        	AsciTemp=AsciTemp-32;
+            }
+        else if (AsciTemp<65 ||AsciTemp>122)
+        // Fragezeichen
+        	AsciTemp=26;
+        if (AsciTemp!=26) 
+        {AsciTemp=AsciTemp-65;}
+                
+                for (int k=0;k<H;k++){
+                    for (int j=0;j<L;j++){
+                    
+                         Output[k][j+charCounter*L]=Row[(AsciTemp*L)+j+(k*27*L)];
+                         
+                         }
+                   
+                    //System.err.print(L+""+H+""+AsciTemp);
+                
+                }
+                charCounter++;
+        }
+        // Write an action using System.out.println()
+        // To debug: System.err.println("Debug messages...");
+        for(int i =0;i<H;i++){
+        	for(int j =0;j<Output[1].length;j++){
+        		System.out.print(Output[i][j]);
+        	}
+        	System.out.println();
+        }
+        
+    }
+}
