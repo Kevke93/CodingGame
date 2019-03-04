@@ -1,0 +1,98 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		String s =in.nextLine();
+		String[] rotations = s.split(" ");
+		String face1 = in.nextLine();
+		String face2 = in.nextLine();
+		String faceAll[] = { face1, face2 };
+        System.err.println(s );
+        System.err.println( face1 );
+        System.err.println(face2);
+		for (String face : faceAll) {
+			for (String rot : rotations) {
+
+				switch (rot) {
+				case "x":
+					if (face.equals("F")) {
+						face = "U";
+					} else if (face.equals("D")) {
+						face = "F";
+					} else if (face.equals("U"))
+						face = "B";
+					else if (face.equals("B")) {
+						face = "D";
+					}
+					break;
+				case "x'":
+					if (face.equals("F")) {
+						face = "D";
+					} else if (face.equals("D")) {
+						face = "B";
+					} else if (face.equals("U"))
+						face = "F";
+					else if (face.equals("B")) {
+						face = "U";
+					}
+					break;
+				case "z":
+					if (face.equals("L")) {
+						face = "U";
+					} else if (face.equals("U")) {
+						face = "R";
+					} else if (face.equals("R"))
+						face = "D";
+					else if (face.equals("D")) {
+						face = "L";
+					}
+					break;
+				case "z'":
+					if (face.equals("L")) {
+						face = "D";
+					} else if (face.equals("U")) {
+						face = "L";
+					} else if (face.equals("R"))
+						face = "U";
+					else if (face.equals("D")) {
+						face = "R";
+					}
+					break;	
+				case "y'":
+					if (face.equals("L")) {
+						face = "F";
+					} else if (face.equals("F")) {
+						face = "R";
+					} else if (face.equals("R"))
+						face = "B";
+					else if (face.equals("B")) {
+						face = "L";
+					}
+					break;
+				case "y":
+					if (face.equals("L")) {
+						face = "B";
+					} else if (face.equals("F")) {
+						face = "L";
+					} else if (face.equals("R"))
+						face = "F";
+					else if (face.equals("B")) {
+						face = "R";
+					}
+					break;
+					
+				}
+			}
+			System.out.println(face);
+		}
+
+	}
+}

@@ -1,0 +1,28 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+
+class Solution {
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int N = in.nextInt();
+        long horse[][]= new long [N][2];
+        // First V then E
+        for (int i = 0; i < N; i++) { 	
+            horse[i][0] = in.nextInt();
+            horse[i][1] = in.nextInt();
+        }
+        long bestScore=Long.MAX_VALUE;
+        for(int i=0;i<N;i++) {
+        	for (int j=i+1;j<N;j++){
+        		long score=0;
+        		score=Math.abs(horse[j][0]-horse[i][0])+Math.abs(horse[j][1]-horse[i][1]);
+        		if (score<bestScore) {bestScore=score;}
+        	}
+
+        }
+        System.out.println(bestScore);
+    }
+}

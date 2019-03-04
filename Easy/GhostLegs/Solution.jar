@@ -1,0 +1,50 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int W = in.nextInt();
+        int H = in.nextInt();
+        if (in.hasNextLine()) {
+            in.nextLine();
+        }
+        char map[][]= new char[W][H];
+        for (int i = 0; i < H; i++) {
+             map[i] = in.nextLine().toCharArray();
+        }
+        
+        for(int i=0;i<W;i++) {
+        	if(map[0][i]!=' ') {
+        		char start=map[0][i];
+        		int x=i;
+        		for(int y=1;y<H-1;y++) {
+        			
+        			if(x>2) {
+        				if(map[y][x-1]=='-')
+        					{x-=3;
+        					continue;}
+        			}
+        			if(x<W-3) {
+        				if(map[y][x+1]=='-') {
+        					x+=3;
+        					continue;
+        				}
+        			}
+        		}
+        		 System.out.println(new String(start+""+map[H-1][x])); 
+        	}
+        }
+
+        // Write an action using System.out.println()
+        // To debug: System.err.println("Debug messages...");
+
+      
+    }
+}

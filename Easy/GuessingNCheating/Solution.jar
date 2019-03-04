@@ -1,0 +1,69 @@
+import java.util.*;
+
+class Solution {
+
+	public static void main(String args[]) {
+		
+		Scanner in = new Scanner(System.in);
+		
+		// Idea, with each guess Bob changes the range of the result. If there is an logic error in the Range Alice has to be a liar
+		int R = in.nextInt();
+		int startR 	= 	0	;
+		int endR	= 	100	;
+		
+		if (in.hasNextLine()) {
+			in.nextLine();
+		}
+		for (int i = 0 ; i < R ; i++) {
+
+			String[] line = in.nextLine().split(" ");
+			
+			if (line[2].equals("high")) {
+				
+				int guess = Integer.parseInt(line[0]);
+
+				if (startR 	> 	guess) {
+					
+					System.out.println("Alice cheated in round " + (i + 1));
+					return;
+					
+				} else if (endR > guess) {
+					endR = guess;}
+				
+			} else if (line[2].equals("low")) {
+				
+				int guess = Integer.parseInt(line[0]);
+				
+				if (endR <= guess) {
+					
+					System.out.println("Alice cheated in round " + (i + 1));
+					return;
+					
+				} else if (startR < guess) {
+					startR = guess;
+					}
+			} else if (line[2].equals("on")) {
+				
+				int guess = Integer.parseInt(line[0]);
+
+				if (guess >= startR && guess <= endR) {
+					
+					System.out.println("No evidence of cheating");
+					return;
+					
+				} else
+					
+					System.out.println("Alice cheated in round " + (i + 1));
+				
+				return;
+			}
+			if (endR - startR == 1) {
+				
+				System.out.println("Alice cheated in round " + (i + 1));
+				return;
+				
+			}
+
+		}
+	}
+}

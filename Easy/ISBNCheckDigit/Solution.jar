@@ -1,0 +1,146 @@
+import java.util.*;
+import java.util.concurrent.SynchronousQueue;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse the standard input
+ * according to the problem statement.
+ **/
+class Solution {
+
+	 static ArrayList<String> invalidList = new ArrayList<>();
+	 static int invalidCounter=0;
+	 
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int N = in.nextInt();
+		if (in.hasNextLine()) {
+			in.nextLine();
+		}
+		
+		//----------------------------------------------------
+		//Input of the ISBN Numbers
+		//---------------------------------------------------
+		
+		for (int i = 0 ; i < N ; i++) {
+			String ISBN = in.nextLine();
+			
+			if (ISBN.length() == 10) {
+				tenNumbers(ISBN);
+				
+			} else if (ISBN.length() == 13) {
+				thirteenNumbers(ISBN);
+				
+			} else {
+				invalidCounter++;
+				invalidList.add(ISBN);
+			}
+		}
+		//------------------------------------------------------
+		// Output
+		//------------------------------------------------------
+		System.out.println(invalidCounter + " invalid:");
+		for (String s : invalidList) {
+			System.out.println(s);
+		}
+	}
+
+	static void thirteenNumbers(String ISBN) {
+
+		int sum = 0;
+		char ISBNch[] = ISBN.toCharArray();
+		
+		//------------------------------------------------------
+		// Go Through the ISBN Number and calculate the ISBN sum
+		//------------------------------------------------------
+		
+		for (int j = 0 ; j < ISBN.length() - 1 ; j++) {
+			
+			if (Character.isDigit(ISBNch[j])) {
+				
+				if (j % 2 == 0) {
+					
+					sum += Character.getNumericValue(ISBNch[j]) * 1;
+					
+				} else {
+					
+					sum += Character.getNumericValue(ISBNch[j]) * 3;
+				}
+			}
+
+			else {
+				//----------------------------------------------
+				// Invalid Sign
+				//---------------------------------------------
+				invalidCounter++;
+				invalidList.add(ISBN);
+				return;
+			}
+
+		}
+		
+		//--------------------------------------------------------
+		// Check if it the Check digit is correct
+		//--------------------------------------------------------
+		
+		if (sum % 10 == 0) {
+			sum = 0;
+			
+		} else
+			
+			sum = 10 - (sum % 10);
+
+		if (sum != Character.getNumericValue(ISBNch[12])) {
+			
+			invalidCounter++;
+			invalidList.add(ISBN);
+		}
+
+	}
+	static void tenNumbers(String ISBN) {
+
+		int sum = 0;
+		char ISBNch[] = ISBN.toCharArray();
+		
+		//------------------------------------------------------
+		// Go Through the ISBN Number and calculate the ISBN sum
+		//------------------------------------------------------
+		
+		for (int j = 0; j < ISBN.length() - 1; j++) {
+			if (Character.isDigit(ISBNch[j])) {
+				sum += Character.getNumericValue(ISBNch[j]) * (10 - j);
+			} else {
+				
+				//----------------------------------------------
+				// Invalid Sign
+				//---------------------------------------------
+				
+				invalidCounter++;
+				invalidList.add(ISBN);
+				return;
+			}
+		}
+		
+		//--------------------------------------------------------
+		// Check if it the Check digit is correct
+		//--------------------------------------------------------
+		
+		if(sum % 11 == 0){
+			sum = 0;}
+		
+		else {
+		sum = 11 - (sum % 11);}
+
+		if (sum == 10 && ISBNch[9] == 'X') {
+			
+		} else if (sum == Character.getNumericValue(ISBNch[9]) && ISBNch[9] != 'X' ) {
+			
+		} else {
+			
+			invalidCounter++;
+			invalidList.add(ISBN);
+		}
+		
+	}
+}

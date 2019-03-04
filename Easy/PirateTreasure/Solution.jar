@@ -1,0 +1,63 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse the standard input
+ * according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int W = in.nextInt() + 2;
+		int H = in.nextInt() + 2;
+		
+		char[][] map = new char[H][W];
+		if (in.hasNextLine()) {
+			String s = in.nextLine();
+			
+		}
+		for (int i = 1; i < H - 1; i++) {
+			String s = in.nextLine();
+			
+
+			char temp[] = s.toCharArray();
+			int  placeMap = 1;
+			for (int j = 0; j < temp.length; j++) {
+
+				if (j % 2 != 0) {
+					placeMap = placeMap - 1;
+				} else
+					map[i][j + placeMap] = temp[j];
+			}
+		}
+
+		for (int i = 1; i < H - 1; i++) {
+			for (int j = 1; j < W - 1; j++) {
+				
+				if (map[i][j] == '0') {
+					boolean treasureFound = true;
+					
+					for (int k = -1; k < 2; k++) {
+						for (int n = -1; n < 2; n++) {
+
+							if (map[i + k][j + n] == '0' && !(k == 0 && n == 0)) {
+								treasureFound = false;
+								break;
+							}
+						}
+					}
+					if (treasureFound) {
+						System.out.println((int) (j - 1) + " " + (int) (i - 1));
+						return;
+					}
+
+				}
+
+			}
+
+		}
+		System.out.println("No Treasure");
+	}
+}

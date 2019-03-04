@@ -1,0 +1,45 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        char[] expression = in.next().toCharArray();
+        ArrayDeque<Character> stack = new ArrayDeque<>();
+        boolean result=true;
+        
+        
+        for(char c:expression) {
+        	switch (c) {
+        	case '(':
+        	case'{':
+        	case '[':
+        		stack.add(c);
+        		break;
+        	case')':
+        		if(stack.isEmpty()) {result=false;}
+        		else if(stack.removeLast()!='(') {result=false; }
+        		break;
+        	case']':
+        		if(stack.isEmpty()) {result=false;}
+        		else if(stack.removeLast()!='[') {result=false; }	
+        		break;
+        	case'}':
+        		if(stack.isEmpty()) {result=false;}
+        		else if(stack.removeLast()!='{') {result=false; }	
+        		break;
+        	}
+        	if(!result)break;
+        }
+        if(stack.isEmpty()) {System.out.println(result);}
+        else {System.out.println(false);}
+
+       
+    }
+}

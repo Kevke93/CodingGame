@@ -1,0 +1,43 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int r1 = in.nextInt();
+        
+        if(river(r1)==true)System.out.println("YES");
+        else System.out.println("NO");
+        
+        // Write an action using System.out.println()
+        // To debug: System.err.println("Debug messages...");
+
+        
+    }
+    public static boolean river (int r) {
+    	
+    	//String digits=Integer.toString(r);
+    	//int amountDigits=digits.length();
+    	
+    	
+    	for( int i=r-1; i>0;i--) {
+    		int sum=i;
+    		int num=i;
+
+    		while (num>0) {
+    			sum=sum+num%10;
+    			num=num/10;
+    		}
+    		
+    		if(sum==r) {return true;}
+    	}
+    	return false;
+    }
+
+}

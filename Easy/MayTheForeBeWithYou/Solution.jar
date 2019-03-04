@@ -1,0 +1,70 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int N = in.nextInt();
+        
+        char ch[][] = new char [2*N][4*N];
+        ch[0][0]='.';
+
+       // First Triangle
+       ch=createTriangle(0, (4*N)/2-1, N, ch);
+       // Second Triangle
+       ch=createTriangle(N, N-1, N, ch);
+       // Third Triangle
+       ch=createTriangle(N, 3*N-1, N, ch);
+
+for (int i =0;i<ch.length;i++) {
+	StringBuilder sb = new StringBuilder();
+	for (int j=0;j<4*N;j++) {
+
+	if (ch[i][j]=='.' || ch[i][j]=='*')
+		sb.append(ch[i][j]);
+	else if (hasSignLeft(ch,i,j)) {sb.append(" ");}
+		
+		
+	}	
+	System.out.println(sb.toString());
+}
+    }
+    public static char[][] createTriangle(int startY,int middle, int height, char ch[][]){
+    	
+    	int amountOfSings=0;
+    	for (int i =startY;i<startY+height;i++) {
+        	if (i==0) { ch[i][middle]='*';}
+        	else {
+        		amountOfSings=(int) 2*(i-startY)+1; 
+        	int start =middle-(amountOfSings/2);
+        	int end = start+amountOfSings-1;
+        	
+        	for (int j =start;j<=end;j++) {
+        		ch[i][j]='*';}
+        	}
+        }
+
+    	return ch;
+    }
+    public static boolean hasSignLeft(char [][]ch,int row, int currentPos) {
+    	
+    	for (int j=currentPos;j<ch[0].length;j++ ) {
+    		if (ch[row][j]=='*' || ch[row][j]=='.') {return true;}
+    		
+    		
+    	}
+    	
+    	
+    	
+    	
+    	return false;
+    }
+    
+    
+}

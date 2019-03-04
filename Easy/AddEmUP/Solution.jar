@@ -1,0 +1,35 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse the standard input
+ * according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int N = in.nextInt();
+		ArrayList<Integer> list = new ArrayList<>();
+		for (int i = 0; i < N; i++) {
+			list.add(in.nextInt());
+		}
+
+		int totalsum = 0;
+		
+		while (list.size()>1) {
+ 				
+				Collections.sort(list);
+				
+				int sum = list.get(0) + list.get(1);
+
+				list.remove(0);
+				list.remove(0);
+				list.add(sum);
+				totalsum += sum;
+					
+		}
+		System.out.println(totalsum);
+	}
+}

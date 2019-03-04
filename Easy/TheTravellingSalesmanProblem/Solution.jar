@@ -1,0 +1,60 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int N = in.nextInt();
+		ArrayList<Integer> xPoint = new ArrayList<Integer>();
+		ArrayList<Integer> yPoint = new ArrayList<Integer>();
+
+		int currentX = in.nextInt();
+		int currentY = in.nextInt();
+		int endX = currentX;
+		int endY = currentY;
+		
+		
+		double overallDistance=0;
+		for (int i = 1; i < N; i++) {
+			xPoint.add(in.nextInt());
+			yPoint.add(in.nextInt());
+		}
+		xPoint.add(endX);
+		yPoint.add(endY);
+		
+		while (xPoint.size() != 0) {
+			double shortestDistanze = Double.MAX_VALUE;
+			int best = -1;
+			int k=1;
+			if(xPoint.size()==1)k=0;
+			
+			
+			for (int i = 0; i < xPoint.size()-k; i++) {
+				double currentDis =  Math.pow(Math.pow(xPoint.get(i) - currentX, 2) + Math.pow(yPoint.get(i) - currentY, 2),0.5);
+
+				if (currentDis < shortestDistanze) {
+					best = i;
+					shortestDistanze = currentDis;
+				}
+			}
+			
+			currentX=xPoint.get(best);
+			currentY=yPoint.get(best);
+			overallDistance=overallDistance+shortestDistanze;
+			xPoint.remove(best);
+			yPoint.remove(best);
+		}
+
+		// Write an action using System.out.println()
+		// To debug: System.err.println("Debug messages...");
+
+		
+		System.out.println((int)Math.round(overallDistance));
+	}
+}

@@ -1,0 +1,60 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse the standard input
+ * according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int rest = in.nextInt();
+		double maxBase = 1;
+		int base = 1;
+		int sum = 1;
+
+		while (sum < (int) Math.abs(rest)) {
+			maxBase = maxBase * 3;
+			base++;
+			sum += maxBase;
+		}
+		int []result = new int[base];
+
+		while (rest != 0) {
+			sum = 0;
+			base = 0;
+			maxBase = 1/3f;
+			if (rest < 0) {
+				maxBase=maxBase*-1;
+			
+					while (sum > rest) {
+						maxBase = maxBase * 3;
+						base++;
+						sum += maxBase;
+					
+				}
+
+				result[base-1] = -1;
+				rest = (rest - (int)maxBase);
+			} else {
+				 
+					while (sum < rest) {
+						maxBase = maxBase * 3;
+						base++;
+						sum += maxBase;
+					
+				}
+					result[base-1] = 1;
+					rest = (rest - (int)maxBase);
+				
+			}
+		}
+			for (int i = result.length - 1; i >= 0; i--) {
+				if(result[i]==-1) {System.out.print("T");}
+				else System.out.print(result[i]);
+			}
+		
+	}
+}

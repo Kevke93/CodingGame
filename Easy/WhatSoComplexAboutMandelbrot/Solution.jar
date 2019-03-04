@@ -1,0 +1,90 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Solution {
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		String c = in.nextLine();
+		int m = in.nextInt();
+		
+		int counter = 0;
+		double re = 0;
+		double im = 0;
+		String signIm = "\\+";
+
+		for (int i = 1 ; i < c.length() ; i++) {
+			if (c.toCharArray()[i] == '-') {
+				
+				signIm = "\\-";
+				break;
+			}
+		}
+		
+		String[] numberSplit = c.split(signIm);
+		
+		if(numberSplit[0].equals("")) {
+			
+			re = Double.parseDouble("-"+numberSplit[1]);
+			numberSplit = numberSplit[2].split("i");
+		}
+		else {
+			
+		re = Double.parseDouble(numberSplit[0]);
+		numberSplit = numberSplit[1].split("i");
+		}
+		
+		im = Double.parseDouble(numberSplit[0]);
+
+		commplexNumber zBevor = new commplexNumber(0, 0);
+		commplexNumber C = new commplexNumber(re, im);
+
+		while (counter < m) {
+			counter++;
+			commplexNumber zCurrent = addComplex(C, multiComplex(zBevor, zBevor));
+
+			if (absolutValue(zCurrent) >= 2) {
+				break;
+			} else {
+				zBevor = zCurrent;
+			}
+
+		}
+		System.out.println(counter);
+	}
+    
+	 public static commplexNumber addComplex(commplexNumber n1 , commplexNumber n2) {
+		 
+		 commplexNumber result= new commplexNumber (n1.getRe()+n2.getRe(),n1.getIm()+n2.getIm());
+		 return result;
+	}
+	 public static commplexNumber multiComplex(commplexNumber n1 , commplexNumber n2) {
+		 
+		 double Re= n1.getRe()*n2.getRe()-(n1.getIm()*n2.getIm());
+		 double Im = n1.getRe()*n2.getIm()+n1.getIm()*n2.getRe();
+				
+		return new commplexNumber(Re, Im);
+
+	 }
+	 public static double absolutValue(commplexNumber n1 ) {
+		 
+		return Math.pow(Math.pow(n1.getRe(), 2)+Math.pow(n1.getIm(), 2), 0.5); 
+	 }
+    }
+    class commplexNumber {
+    	double re;
+    	double im;
+    	
+    	commplexNumber(double re, double im) {
+			this.re=re;
+			this.im=im;
+		}
+    	double getRe() {return re;}
+    	double getIm() {return im;}
+    	
+    }
