@@ -1,0 +1,298 @@
+import java.util.*;
+import java.io.*;
+import java.math.*;
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+class Player {
+	static char map[][]=new char [4][];
+	static String validMoves[] = { "SPEED", "SLOW", "JUMP", "UP", "DOWN"};
+	static String [][] possibleMoves=calculatePossibleVariation(4);
+	
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int M = in.nextInt(); // the amount of motorbikes to control
+        int V = in.nextInt(); // the minimum amount of motorbikes that must survive
+        System.err.println(M + " "+ V);
+       map[0] = in.next().toCharArray(); // L0 to L3 are lanes of the road. A dot character . represents a safe space, a zero 0 represents a hole in the road.     
+       map[1] = in.next().toCharArray();
+       map[2] = in.next().toCharArray();
+       map[3] = in.next().toCharArray();
+       System.err.println(map[0]);
+       System.err.println(map[1]);
+       System.err.println(map[2]);
+       System.err.println(map[3]);
+        // game loop
+        while (true) {
+        	ArrayList<Bike> bikeList=new ArrayList<>();       	
+            int S = in.nextInt(); // the motorbikes' speed
+            System.err.println(S);
+            for (int i = 0; i < M; i++) {
+                int X = in.nextInt(); // x coordinate of the motorbike
+                int Y = in.nextInt(); // y coordinate of the motorbike
+                int A = in.nextInt(); // indicates whether the motorbike is activated "1" or detroyed "0"       
+                System.err.println(X+ " "+ Y+ " "+ A);
+                if(A==1) {
+            	   Bike bike = new Bike(S,Y,X,A);
+            	   bikeList.add(bike);
+                } 
+            }
+ 
+            System.out.println(Solve(bikeList));
+        }
+    }
+
+	public static String Solve(ArrayList<Bike> bikeList) {
+
+		int bestScore = Integer.MIN_VALUE;
+
+		String bestMove = "";
+
+		for (String[] moves : possibleMoves) {
+
+			String currentFirstMove = moves[0];
+			int malusInvalidmove = 0;
+			int speed0Malus = 0;
+			for (String singleMove : moves) {
+
+				boolean moveIsValid = simulateMove(singleMove, bikeList);
+
+				if (!moveIsValid) {
+					malusInvalidmove = -5000;
+					break;
+				}
+			}
+
+			int bikesAlive = bikeAlive(bikeList);
+			int speed = bikeList.get(0).getSpeed();
+			if (speed == 0 || bikeList.get(0).wasSpeed0()) {
+				speed0Malus = -1000;
+			}
+			int currentScore = bikesAlive * 100 + speed * 10 + malusInvalidmove + speed0Malus;
+
+			if (currentScore > bestScore) {
+
+				bestScore = currentScore;
+				bestMove = currentFirstMove;
+			}
+			for (Bike bike : bikeList) {
+				bike.reset();
+			}
+		}
+
+		return bestMove;
+	}
+    public static int bikeAlive(ArrayList<Bike>bikeList) {
+    	int bikeCounter=0;
+    	for(Bike bike:bikeList) {
+    		if(bike.getAliverness()==1)bikeCounter++;
+    }
+    	return bikeCounter;
+    }
+    
+    public static boolean simulateMove(String move, ArrayList<Bike> bikeList) {
+    	int speed=bikeList.get(0).getSpeed();
+    	
+    	ArrayList<Bike>aliveList=new ArrayList<>();
+    	for(Bike bike: bikeList) {
+    		if(bike.getAliverness()==1)aliveList.add(bike);
+    	}
+    	switch(move) {
+    	case "SPEED":
+        	for(Bike bike: aliveList) {
+        		int bikeX=bike.getX();
+        		int bikeY=bike.getY();
+        		for(int i=1;i<=speed+1;i++) {
+        			// Then the BIke is over the bridge
+        			if(bike.getX()+i>=map[0].length-1) {
+        				
+        				// variable input to dont update X Pos
+        				break;
+        			}
+        			if (map[bikeY][bikeX+i]=='0') {bike.updateAliveness(0);break;}
+        		}
+        		int updatedSpeed=speed+1;
+        		bike.updateX(bikeX+updatedSpeed);
+        		bike.updateSpeed(updatedSpeed);
+        	}
+        	break;
+    	case "SLOW":
+    		if(speed==0)return false;
+    		for(Bike bike: aliveList) {
+        		int bikeX=bike.getX();
+        		int bikeY=bike.getY();
+        		for(int i=1;i<=speed-1;i++) {
+        			// Then the BIke is over the bridge
+        			if(bike.getX()+i>=map[0].length-1) {
+        				
+        				break;
+        			}
+        			if (map[bikeY][bikeX+i]=='0') {bike.updateAliveness(0);break;}
+        		}
+        		int updatedSpeed=speed-1;
+        		bike.updateX(bikeX+updatedSpeed);
+        		bike.updateSpeed(updatedSpeed);
+        		if(updatedSpeed==0) {
+        			bike.speedIs0();
+        		}
+        	}
+    		break;
+    	case "JUMP":
+    		
+    		for(Bike bike: aliveList) {
+        		int bikeX=bike.getX();
+        		int bikeY=bike.getY();
+        			// Then the BIke is over the bridge
+        			if(bike.getX()+speed>=map[0].length-1) {
+        				break;
+        			}
+        			 
+        			if (map[bikeY][bikeX+speed]=='0') 
+        			{bike.updateAliveness(0);}
+
+        		bike.updateX(bikeX+speed);
+        	}
+    		break;
+    	case "UP":
+    		
+    		for(Bike bike: aliveList) {
+        		int bikeX=bike.getX();
+        		int bikeY=bike.getY();
+        		
+        		if(bikeY==0) {
+        			for(Bike dead:aliveList) {
+        				dead.updateAliveness(0);
+        			}
+        			return false;
+        		}
+        		
+        		for(int i=1;i<=speed;i++) {
+        			// Then the BIke is over the bridge
+        			if(bike.getX()+i>=map[0].length-1) {
+        				bike.updateX(map[0].length-1);
+        				break;
+        			}
+        			if (map[bikeY][bikeX+i]=='0' ||map[bikeY-1][bikeX+i]=='0' ) {
+        				if(map[bikeY][bikeX+i]=='0' && i==speed && map[bikeY-1][bikeX+i]!='0')
+        				{
+        					
+        				}
+        				else
+        				bike.updateAliveness(0);break;}
+        		}
+        		bike.updateX(bikeX+speed);
+        		bike.updateY(bikeY-1);
+        	}
+    		break;
+    	case "DOWN":
+    		for(Bike bike: aliveList) {
+        		int bikeX=bike.getX();
+        		int bikeY=bike.getY();
+        		
+        		if(bikeY==3) {
+        			for(Bike dead:aliveList) {
+        				dead.updateAliveness(0);
+        			}
+        			
+        			return false;}
+        		
+        		for(int i=1;i<=speed;i++) {
+        			// Then the BIke is over the bridge
+        			if(bike.getX()+i>=map[0].length-1) {
+        				bike.updateX(map[0].length-1);
+        				break;
+        			}
+        			if (map[bikeY][bikeX+i]=='0' ||map[bikeY+1][bikeX+i]=='0' ) {
+        				if(map[bikeY][bikeX+i]=='0' && i==speed && map[bikeY+1][bikeX+i]!='0')
+        				{
+        					
+        				}
+        				else
+        				bike.updateAliveness(0);break;}
+        		}
+        		bike.updateX(bikeX+speed);
+        		bike.updateY(bikeY+1);
+        	}
+    		break;
+    	default: System.err.println("wrong Move");
+    	}
+    	
+    	return true;
+    }
+
+	public static String[][] calculatePossibleVariation(int simulationDepth) {
+		int height = (int) Math.pow(5, simulationDepth);
+		String result[][] = new String[height][simulationDepth];
+		int amMove=validMoves.length;
+		int rowCounter= 0;
+
+
+		for (int j = simulationDepth - 1; j >= 0 ; j--) {
+			rowCounter = 0;
+			for (int n = 0; n < Math.pow(amMove, j) ; n++) {
+
+				for (int i = 0; i < amMove; i++) {
+					// repeats
+					for (int k = (int) Math.pow(amMove, simulationDepth - j - 1) ; k > 0 ; k--) {
+						result[rowCounter][j] = validMoves[i];
+						rowCounter++;					
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+}
+class Bike {
+	private int speed;
+	private int y;
+	private int x;
+	private int aliveness;
+	private boolean speedWas0;
+	private int oldSpeed;
+	private int oldY;
+	private int oldX;
+	private int oldAliveness;
+	
+	
+	Bike(int speed, int y, int x, int aliverness) {
+		this.speed=speed;
+		this.y=y;
+		this.x=x;
+		this.aliveness=aliverness;
+		this.oldSpeed=speed;
+		this.oldY=y;
+		this.oldX=x;
+		this.oldAliveness=aliverness;
+		this.speedWas0=false;
+		
+	}
+
+	protected void reset() {
+		this.speed =oldSpeed;
+		this.y=oldY;
+		this.x=oldX;
+		this.aliveness=oldAliveness;
+		this.speedWas0=false;
+	}
+	protected void speedIs0() {this.speedWas0=true;}
+	protected boolean wasSpeed0() {return speedWas0;}
+	protected void update(int speed, int y, int x, int aliverness) {
+		this.speed=speed;
+		this.y=y;
+		this.x=x;
+		this.aliveness=aliverness;
+	}
+	protected void updateSpeed(int speed) {this.speed=speed;}
+	protected void updateX(int x) {this.x=x;}
+	protected void updateY(int y) {this.y=y;}
+	protected void updateAliveness(int aliverness) {this.aliveness=aliverness;}
+	
+	protected int getX() {return x;}
+	protected int getY() {return y;}
+	protected int getAliverness() {return aliveness;}
+	protected int getSpeed() {return speed;}
+}

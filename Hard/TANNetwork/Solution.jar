@@ -1,0 +1,205 @@
+import java.util.*;
+import java.util.Map.Entry;
+import java.io.*;
+import java.math.*;
+
+// Algorithmus Dijkstra ab Zeile 144
+// Ziel des Programs kürzesten Weg durch ein Bahnnetz zu finden
+
+// Vorgehen: Bahnstationen als Node, mit den Referenzen zur Nächsten Bahnstadtion mit dazugehörige Distanz
+//			kürzester Weg zum Ziel mittel Dijkstra.
+class Solution {
+	static Set<Node>allNodes = new HashSet<>();
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		String startPoint[] = in.next().split(":");
+		String startStadtion = startPoint[1];
+
+		String endPoint[] = in.next().split(":");
+		String endStadtion = endPoint[1];
+
+		int N = in.nextInt();
+		if (in.hasNextLine()) {
+			in.nextLine();
+		}
+		for (int i = 0; i < N; i++) {
+			String stop[] = in.nextLine().split(",");
+		
+			String id[] = stop[0].split(":");
+			String idOfStop = id[1];
+
+			StringBuilder sb = new StringBuilder(stop[1]);
+			sb.deleteCharAt(0);
+			sb.deleteCharAt(sb.length() - 1);
+			String name = sb.toString();
+
+			double latidude = Double.parseDouble(stop[3]) ;
+			double longtidude = Double.parseDouble(stop[4]) ;
+			int typeOfStop = Integer.parseInt(stop[stop.length - 1]);
+
+			Node node = new Node(idOfStop, name, longtidude, latidude, typeOfStop);
+			allNodes.add(node);
+		}
+		int M = in.nextInt();
+		if (in.hasNextLine()) {
+			in.nextLine();
+		}
+		for (int i = 0; i < M; i++) {
+			String route[] = in.nextLine().split(" ");
+			String r1[] = route[0].split(":");
+			String stop1 = r1[1];
+			String r2[] = route[1].split(":");
+			String stop2 = r2[1];
+
+			createConnection(stop1, stop2);
+		}
+		Node start = getNodeBaseOnID(startStadtion);
+		Node end = getNodeBaseOnID(endStadtion);
+		Graph g = new Graph(allNodes);
+
+		Dijkstra(g, start,end);
+		
+		// Get results
+		if (end.getDistance() != Double.MAX_VALUE) {
+			for (Node node : end.getShortestPath()) {
+				System.out.println(node.getName());
+			}
+			System.out.println(end.getName());
+		}
+		else System.out.println("IMPOSSIBLE");
+	
+			
+		}
+	
+    public static Node getNodeBaseOnID(String point) {
+    	for(Node node: allNodes) {
+    		
+    		if(node.getID().equals(point))
+    			return node;
+    		
+    	}
+    	return null;
+    }
+    public static void createConnection(String start, String end) {
+    	
+    	for(Node node:allNodes) {
+    		
+        	if(node.getID().equals(start)) {
+        		for(Node endNode:allNodes) {
+        			if(endNode.getID().equals(end))
+        			{	
+        				double dis =CalcDis(node,endNode);
+        				node.addConnection(endNode, dis);
+        				
+        				
+        			}
+        		}            		
+        	}
+        }
+    }
+    public static double CalcDis(Node node1,Node node2) {
+    	double result=0;
+    	
+    	double longtitudeA=node1.getLongitude();
+    	double longtitudeB=node2.getLongitude();
+    	double latitudeA=node1.getLatitude();
+    	double latitudeB=node2.getLatitude();
+    	
+    	
+    	
+    	double x=(longtitudeB*Math.PI/180-longtitudeA*Math.PI/180)*Math.cos((longtitudeA+longtitudeB)*0.5);
+    	double y=latitudeB*Math.PI/180-latitudeA*Math.PI/180;
+    	result= Math.pow(Math.pow(x, 2)+Math.pow(y, 2), 0.5)*6371;
+
+    	return result;
+    }
+
+	public static Graph Dijkstra(Graph graph, Node startingNode,Node endNode) {
+		startingNode.setDistance(0);
+
+		Set<Node> settled = new HashSet<Node>();
+		Queue<Node> priorityQueue = initQueue();
+		priorityQueue.add(startingNode);
+
+		while (!priorityQueue.isEmpty()) {
+			Node currentNode = priorityQueue.remove();
+			if (currentNode.equals(endNode)) return graph;
+
+			for (Entry<Node, Double> entr : currentNode.getConnections().entrySet()) {
+				Node neigbour = entr.getKey();
+				double weidht = entr.getValue();
+				
+				if (!settled.contains(neigbour)) {
+					calcMinDistance(neigbour, weidht, currentNode);
+					priorityQueue.add(neigbour);
+				}
+			}
+			settled.add(currentNode);
+			
+		}
+		return graph;
+	}
+    
+	public static void calcMinDistance(Node neigbour, double weidht, Node currentNode) {
+		
+		if(currentNode.getDistance()+weidht<neigbour.getDistance()) {
+			neigbour.setDistance(currentNode.getDistance()+weidht);
+			LinkedList<Node> shortestPath = new LinkedList<>(currentNode.getShortestPath());
+			shortestPath.add(currentNode);
+			neigbour.setShortestpath(shortestPath);
+		}
+	}
+	   private static PriorityQueue<Node> initQueue() {
+	        return new PriorityQueue<>(10, new Comparator<Node>() {
+
+				@Override
+				public int compare(Node o1, Node o2) {
+					if(o1.getDistance()<o2.getDistance())
+					return 1;
+					else
+					return 0;
+				}	        	
+	    });
+	   }
+
+}
+class Node{
+	private String iD;
+	private String name;
+	private double longitude;
+	private double latitude;
+	private int typeOfStop;
+	private double distance=Double.MAX_VALUE;
+	private LinkedList<Node>shortestPath= new LinkedList<Node>();
+	private Map<Node,Double> adjacentNodes = new HashMap<Node,Double>();
+	
+	Node(String iD, String name, double longitude, double latidue,int typeOfStop){
+		this.iD=iD;
+		this.name=name;
+		this.latitude=latidue;
+		this.longitude=longitude;
+		this.typeOfStop=typeOfStop;
+	}
+	public String getID() {return iD;}
+	public String getName() {return name;}
+	public double getLongitude() {return longitude;}
+	public double getLatitude() {return latitude;}
+	public int getTypeOfStop() {return typeOfStop;}
+	public LinkedList<Node> getShortestPath(){return shortestPath;}
+	public Map<Node,Double>getConnections(){return adjacentNodes;}
+	public void setShortestpath(LinkedList<Node>nodes) {this.shortestPath=nodes;}
+	public void addConnection(Node node, double dis) {adjacentNodes.put(node,dis);}
+	public void setDistance(double d) {this.distance=d;}
+	public double getDistance() {return distance;}
+
+	
+}
+class Graph{
+
+	Set<Node> nodes = new HashSet<Node>();
+	
+	Graph(Set<Node> allNodes){this.nodes=allNodes;}
+	public void addNode(Node node) {
+		nodes.add(node);
+	}

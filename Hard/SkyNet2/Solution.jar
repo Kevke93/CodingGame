@@ -1,0 +1,260 @@
+import java.util.*;
+import java.util.Map.Entry;
+
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.SysexMessage;
+
+import java.io.*;
+import java.math.*;
+import java.security.AllPermission;
+
+/**
+ * Auto-generated code below aims at helping you parse the standard input
+ * according to the problem statement.
+ **/
+class Player {
+	static ArrayList<Node> list = new ArrayList<Node>();
+	static ArrayList<Node> exitNode = new ArrayList<Node>();
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int N = in.nextInt(); // the total number of nodes in the level, including the gateways
+		int L = in.nextInt(); // the number of links
+		int E = in.nextInt(); // the number of exit gateways
+		System.err.println(N + " " + L + " " + E);
+
+		for (int i = 0; i < N; i++) {
+			Node node = new Node(i);
+			list.add(node);
+		}
+		for (int i = 0; i < L; i++) {
+			int N1 = in.nextInt(); // N1 and N2 defines a link between these nodes
+			int N2 = in.nextInt();
+			System.err.println(N1 + " " + N2);
+			list.get(N1).addConnection(list.get(N2));
+			list.get(N2).addConnection(list.get(N1));
+		}
+
+		for (int i = 0; i < E; i++) {
+			int EI = in.nextInt(); // the index of a gateway node
+			list.get(EI).setExit(true);
+			exitNode.add(list.get(EI));
+			System.err.println(EI);
+		}
+		System.err.println();
+		// game loop
+		while (true) {
+			int SI = in.nextInt(); // The index of the node on which the Skynet agent is positioned this turn
+			System.err.println(SI);
+			int result[]=getBestNodeToBlock(SI);
+			
+			list.get(result[0]).removeConnection(list.get(result[1]));
+			list.get(result[1]).removeConnection(list.get(result[0]));
+			
+			System.out.println(result[0] + " "+ result[1]);
+		}
+	}
+
+	public static int[] getBestNodeToBlock(int SI) {
+		int[] result = new int[2];
+		resetNodes();
+		Dijkstra(list.get(SI));
+		ArrayList<Node> criticialList=new ArrayList<>();
+		
+		// find closest Exit
+		int closestDistance=Integer.MAX_VALUE;
+		int bestVal=-1;
+		for(Node node:exitNode) {
+			if(node.getDistance()<closestDistance) {
+				closestDistance=node.getDistance();
+				bestVal=node.getVal();
+			}	
+		}
+		if(closestDistance==1) {
+			if(list.get(bestVal).getConnections().size()==1) {list.get(bestVal).setExit(false);}
+			result[0]= bestVal;result[1]=SI; return result;}
+		
+		// find closest critical Node
+
+	
+		int closestCriticalNode=Integer.MAX_VALUE;
+		
+		
+		for(Node node: list) {
+			if(node.getVal()==5) {
+				System.err.println("Stop");
+			}
+			int exitCounter=0;
+			for(Node con: node.getConnections()) {
+				if(con.isExitForSI()) {
+					exitCounter++; }
+			}
+			if(exitCounter>=2) {
+				
+				criticialList.add(node);
+			}	
+		}
+		Node criticalNode=null;
+		
+		for(Node node :criticialList) {
+			
+			if(node.getDistance()<closestCriticalNode) {
+				criticalNode=node;
+				closestCriticalNode=node.getDistance();
+			}
+
+			for(int i =0;i<node.getShortestPath().size();i++) {
+				for(Node possibleExit:node.getShortestPath().get(i).getConnections()) {
+					if(possibleExit.isExitForSI()) {
+						if(node.getShortestPath().get(i).getDistance()<closestCriticalNode && node.getShortestPath().get(i).getDistance()!=0) {
+							criticalNode=node;
+							closestCriticalNode=node.getShortestPath().get(i).getDistance();
+							break;
+						}
+						else if(node.getShortestPath().get(i).getDistance()==closestCriticalNode) {
+							if(criticalNode.getDistance()>node.getDistance()) {
+								criticalNode=node;
+							}
+							
+						}
+						
+					}
+				}
+			}
+		}
+		int tempValExitCriticalNode=-1;
+		if(closestCriticalNode!=Integer.MAX_VALUE) {
+			for(Node con: criticalNode.getConnections()) {
+				if(con.isExitForSI()) {
+					tempValExitCriticalNode=con.getVal();}
+			}
+			
+			result[0]= tempValExitCriticalNode;result[1]=criticalNode.getVal(); return result;
+		}
+		// The game is won, close a random Node
+		
+		for(Node node :exitNode) {
+			if(node.getConnections().size()>0) {
+				result[0]=node.getVal(); result[1]=node.getConnections().get(0).getVal();
+				return result;
+			}
+		}
+		
+		return result;
+	}
+
+	public static void resetNodes() {
+		for (Node node : list) {
+			node.setDistance(Integer.MAX_VALUE);
+			node.setShortestpath(new LinkedList<>());
+		}
+	}
+
+	public static void Dijkstra(Node startingNode) {
+		startingNode.setDistance(0);
+
+		Set<Node> settled = new HashSet<Node>();
+		ArrayList<Node> prioritylist = new ArrayList<>();
+		prioritylist.add(startingNode);
+
+		while (!prioritylist.isEmpty()) {
+			Collections.sort(prioritylist, new NodeComperator());
+
+			Node currentNode = prioritylist.remove(0);
+			if (!currentNode.isExitForSI()) {
+				for (Node neigbour : currentNode.getConnections()) {
+
+					if (!settled.contains(neigbour)) {
+
+						calcMinDistance(neigbour, 1, currentNode);
+						prioritylist.add(neigbour);
+
+					}
+				}
+			}
+			settled.add(currentNode);
+
+		}
+		return;
+	}
+
+	public static void calcMinDistance(Node neigbour, int weidht, Node currentNode) {
+
+		if (currentNode.getDistance() + weidht < neigbour.getDistance()) {
+			neigbour.setDistance(currentNode.getDistance() + weidht);
+			LinkedList<Node> shortestPath = new LinkedList<>(currentNode.getShortestPath());
+			shortestPath.add(currentNode);
+			neigbour.setShortestpath(shortestPath);
+		}
+	}
+
+}
+
+class NodeComperator implements Comparator<Node> {
+
+	@Override
+	public int compare(Node o1, Node o2) {
+
+		if (o1.getDistance() > o2.getDistance())
+			return 1;
+		else if (o1.getDistance() < o2.getDistance())
+			return -1;
+		else
+			return 0;
+	}
+
+}
+
+class Node {
+
+	private int val;
+	private boolean isExit;
+	private Integer distance = Integer.MAX_VALUE;
+	private LinkedList<Node> shortestPath = new LinkedList<Node>();
+	private ArrayList<Node> adjacentNodes = new ArrayList<Node>();
+
+	Node(int val) {
+		this.val = val;
+	}
+
+	public int getVal() {
+		return val;
+	}
+
+	protected void removeConnection(Node node) {
+		adjacentNodes.remove(node);
+	}
+
+	protected void setExit(boolean isExit) {
+		this.isExit = isExit;
+	}
+
+	public LinkedList<Node> getShortestPath() {
+		return shortestPath;
+	}
+
+	public ArrayList<Node> getConnections() {
+		return adjacentNodes;
+	}
+
+	public void setShortestpath(LinkedList<Node> nodes) {
+		this.shortestPath = nodes;
+	}
+
+	public void addConnection(Node node) {
+		adjacentNodes.add(node);
+	}
+
+	public void setDistance(int d) {
+		this.distance = d;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public boolean isExitForSI() {
+		return isExit;
+	}
+
+}
