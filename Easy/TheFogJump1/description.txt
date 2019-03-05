@@ -1,0 +1,77 @@
+Goal
+You are at a frog contest. The frog with the longest jump wins.
+Your frog participates in the contest.
+
+You want to know in which place your frog is, but you are impatient and you find it is too long to wait for the results.
+
+The ranking of the contest is as follows:
+- The further the frog lands, the better the frog's place.
+- The best place is the First place.
+- If two frogs jump exactly to the same distance, they have the same place and that means that the next place does not exist. For example, if there are two frogs in the fifth position, there is no sixth position, we directly take the seventh position.
+- Distances are in meters, rounded to the nearest centimeter. That is, distances are rounded to the nearest multiple of 0.01
+
+
+############################################################
+
+
+The frog is in a two dimensional world.
+There is only one external force which is the gravity. Gravity only applies on the y axis, x coordinate is always 0.
+The ground is flat at y = 0.
+
+We will place ourselves in a two-dimensional orthonormal frame, in Galilean land frame of reference.
+Given are the initial position of the frog, (x, y), her mass m (in gram), the angle alpha (in degrees) of the speed vector of the frog at time = 0, the initial speed magnitude (in m/s) and the gravity intensity vector (a, b each in m/s²). 
+You have to do some mechanics and some math calculus to find the position of the frog after her bound.
+
+I should explain the way to solve this puzzle as it was explained in Physics.
+Step 1: Calculate the velocity components horizontal and vertical.
+Step 2: Integrate the velocity to calculate the position components.
+Step 3: Calculate the time when the frog landed after her bound. That is when the vertical expression of the position is equal to 0 meters.
+Step 4: Inject the time in the horizontal expression to find the x position of the frog after her bound.
+
+
+For people who do not want to make physics calculations, here is the formula to know the distance of the jump of your frog. All units here are the same as in the specifications.
+
+speed_x = cos(alpha) * speed
+speed_y = sin(alpha) * speed
+
+delta = speed_y^2 - 4 * (b * 1/2) * y
+time = (-speed_y - sqrt(delta)) / (2 * b * 1/2)
+
+x final = (a * 1/2 * time^2) + (speed_x * time) + x
+Input
+Line 1: The number of frogs f at the contest (without your frog).
+Line 2: Frogs jump lengths in meters of each frog separated by spaces.
+
+Line 3: Two integers x y separated by space representing the initial position of your frog.
+Line 4: An integer m representing the mass of your frog in grams.
+Line 5: An integer alpha which is the angle alpha of the speed vector at t = 0 in degree.
+Line 6: A float speed representing the norm of the initial speed vector (at t = 0) in meters / seconds
+Line 7: Two floats a b separated by space representing the vector of the gravity intensity on the planet where the frog is in meters / seconds².
+Output
+One line with the place of your frog in the contest.
+Constraints
+The x is horizontal and y is vertical.
+
+The contest cannot be organized if there are less than 3 frogs or more than 100 frogs. 3 ≤ f ≤ 100
+
+The ground is flat and is a sea level +0.
+The mass of the frog is strictly positive. 0 < m ≤1500
+The angle can be between 0° and 90°. 0 ≤ alpha ≤ 90
+The speed can only be positive. 0 ≤ speed
+The gravity intensity is strictly vertical. a = 0 and b < 0
+
+The frog always comes back on the ground.
+The frog jumps along the positive direction of the x axis.
+
+For the precision of the distance, we round to two decimal places.
+Example
+Input
+5
+0.06 0.01 0.10 0.07 0.08
+0 0
+125
+30
+1.02
+0 -9.81
+Output
+2
