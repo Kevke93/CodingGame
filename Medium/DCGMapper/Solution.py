@@ -10,5 +10,5 @@ for i in range(n):
             for k in range(4):
                 if pattern[k] == "X":
                     field[lenght-1-j][k] = "X"
-for j in range(lenghtl):
+for j in range(lenght):
     print("".join(field[j]))
