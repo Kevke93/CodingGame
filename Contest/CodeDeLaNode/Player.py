@@ -48,6 +48,7 @@ BLUEBERRIES = "BLUEBERRIES"
 STRAWBERRIES = "STRAWBERRIES"
 CHOPPED_STRAWBERRIES = "CHOPPED_STRAWBERRIES"
 CROISSANT = "CROISSANT"
+TARD = "TARD"
 class Game:
     def __init__(self):
         self.player = Player()
@@ -118,6 +119,7 @@ for y in range(7):
         game.addTile(x, y, tileChar)
         log(tileChar)
 turns_Wait=0
+inOven = False
 # game loop
 
 
@@ -160,9 +162,10 @@ while True:
     
     if game.player.order == None:
         orders.sort(reverse=True)
-
+        turns_Wait=0
+        inOven = False
         for order in orders:
-            if "CROISSANT" in order[1] & STRAWBERRIES in order[1]:
+            if (CROISSANT in order[1] and STRAWBERRIES in order[1]) or TARD not in order[1]:
                 continue
             game.player.order = order[1].replace("DISH","").split("-")
             log(order)
@@ -170,16 +173,20 @@ while True:
     if game.player.order == None:
         print("WAIT")
     elif CROISSANT in game.player.order:
-        if CROISSANT not in game.player.item and turns_Wait == 0:
+        if "DOUGH" not in game.player.item and inOven == False:
             game.use(game.getTileByName(DOUGH))
-        elif DOUGH in game.player.item and turns_Wait == 0 :
+        elif DOUGH in game.player.item  :
             game.use(game.getTileByName(OVEN))
-            turns_Wait = 10
+            turns_Wait=4
+            inOven = True
         elif turns_Wait != 0:
             turns_Wait -= 1
             print("WAIT")
         else:
             game.use(game.getTileByName(OVEN))
+            game.player.order.remove(CROISSANT)
+            inOven = False
+            
     elif CHOPPED_STRAWBERRIES in game.player.order:
             if STRAWBERRIES not in game.player.item:
                 game.use(game.getTileByName(STRAWBERRY_CRATE))
@@ -205,7 +212,7 @@ while True:
         else:
             game.player.order.remove(BLUEBERRIES)
             game.use(game.getTileByName(WINDOW))
-    elif len(game.player.order) == 1 and DISH in game.player.item:
+    elif len(game.player.order) <= 1  and DISH in game.player.item:
         game.use(game.getTileByName(WINDOW))
     elif DISH not in game.player.item:
         game.player.order = None
